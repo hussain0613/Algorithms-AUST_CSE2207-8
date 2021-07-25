@@ -10,7 +10,6 @@ cost(B) = cost(A) + cost(A -> B) + RCL(RCL_MAT(A), A, B); // for root node A = n
 
 
 #include<stdio.h>
-#include<stdlib.h>
 #include<functional>
 #include<vector>
 #include<queue>
@@ -29,16 +28,19 @@ const int inf = get_mx(); //pseudo infinity
 
 
 struct Data{
+
     int node, cost, level;
     int rca_matrix[SIZE][SIZE], path[SIZE+1];
 
-    /*bool operator<(const Data &other) const
+
+    bool operator<(const Data &other) const
     {
         return this->cost < other.cost;
-    }*/
-    bool operator()(const Data d1, const Data d2)
+    }
+
+    bool operator>(const Data &other) const
     {
-        return d1.cost > d2.cost;
+        return this->cost > other.cost;
     }
 };
 typedef struct Data Data;
@@ -51,19 +53,19 @@ int reduce(int mat[SIZE][SIZE]);
 
 
 
-Data tsp(int mat[SIZE][SIZE])
+Data tsp(int mat[SIZE][SIZE], int root)
 {
     Data root_data;
     //root_data = (Data*) malloc(sizeof(Data));
 
     root_data.level = 0;
-    root_data.path[root_data.level] = 0;
-    root_data.node = 0;
+    root_data.node = root;
+    root_data.path[root_data.level] = root_data.node;
 
     cpy_mat(mat, root_data.rca_matrix);
     root_data.cost = reduce(root_data.rca_matrix);
 
-    std::priority_queue<Data, std::vector<Data>, Data> Q;
+    std::priority_queue<Data, std::vector<Data>, std::greater<Data>> Q;
 
     Q.push(root_data);
 
@@ -85,8 +87,8 @@ Data tsp(int mat[SIZE][SIZE])
                 child.path[child.level] = child.node;
 
                 cpy_mat(current.rca_matrix, child.rca_matrix);
-                if(child.level+1 < SIZE) child.rca_matrix[i][0]; // not going back to root if still in the middle
-                pre_ruduction_processing(child.rca_matrix, 0, current.node, i);
+                if(child.level+1 < SIZE) child.rca_matrix[i][root_data.node]; // not going back to root if still in the middle
+                pre_ruduction_processing(child.rca_matrix, root_data.node, current.node, i);
 
                 child.cost = current.cost + current.rca_matrix[current.node][i] + reduce(child.rca_matrix);
 
@@ -112,7 +114,7 @@ int main()
     printf("initial cost adjacency matrix: \n");
     print_mat(mat);
 
-    Data final_node = tsp(mat);
+    Data final_node = tsp(mat, 0);
 
     printf("final node: %d\n", final_node.node);
     printf("final level: %d\n", final_node.level);
