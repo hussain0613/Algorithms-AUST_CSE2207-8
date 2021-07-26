@@ -87,7 +87,7 @@ Data tsp(int mat[SIZE][SIZE], int root)
                 child.path[child.level] = child.node;
 
                 cpy_mat(current.rca_matrix, child.rca_matrix);
-                if(child.level+1 < SIZE) child.rca_matrix[i][root_data.node]; // not going back to root if still in the middle
+                if(child.level+1 < SIZE) child.rca_matrix[i][root_data.node] = inf; // not going back to root if still in the middle
                 pre_ruduction_processing(child.rca_matrix, root_data.node, current.node, i);
 
                 child.cost = current.cost + current.rca_matrix[current.node][i] + reduce(child.rca_matrix);
