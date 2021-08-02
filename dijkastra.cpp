@@ -7,13 +7,13 @@ using std::pair;
 using std::make_pair;
 using std::stack;
 
-#define INPUT_FILE_NAME "input.txt"
+#define INPUT_FILE_NAME "input__ignore__.txt"
 #define INF INT_MAX // pseudo infinity
 
 int SIZE;
 
 vector<vector<pair<int, int>>> graph; // adjacency list with weight
-vector<int> predecessors, distances;
+vector<int> predecessors, distances, done_vertices;
 
 class Comparator{
 public:
@@ -80,6 +80,7 @@ void dijkastra(int root)
 
     while(! q.empty()){
         int src = q.top();
+        done_vertices.push_back(src);
         q.pop();
 
         for(int i = 0; i<graph.at(src).size(); ++i){
@@ -129,6 +130,11 @@ int main()
         }
         printf("\n");
     }
+    printf("\n");
+
+    printf("finished vertices: ");
+    for(int i = 0; i<done_vertices.size(); ++i) printf("%d ", done_vertices.at(i));
+    printf("\n");
 
     return 0;
 }
