@@ -1,3 +1,6 @@
+# my own ignore patterns/files
+*__ignore__*
+
 # Prerequisites
 *.d
 
