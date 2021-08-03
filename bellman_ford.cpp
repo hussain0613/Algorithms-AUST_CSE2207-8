@@ -2,7 +2,6 @@
 #include<bits/stdc++.h>
 
 using std::vector;
-using std::priority_queue;
 using std::pair;
 using std::make_pair;
 using std::stack;
@@ -13,16 +12,8 @@ using std::stack;
 int SIZE;
 
 vector<vector<pair<int, int>>> graph; // adjacency list with weight
-vector<int> predecessors, distances, done_vertices;
-
-class Comparator{
-public:
-    bool operator()(const int &a, const int &b){
-        return distances.at(a) > distances.at(b);
-    }
-};
-priority_queue<int, vector<int>, Comparator> q;
-
+vector<int> edges[3];
+vector<int> predecessors, distances;
 
 
 void graph_input() // weighted and directed
@@ -46,6 +37,10 @@ void graph_input() // weighted and directed
         fscanf(file, "%d%d%d", &src, &dest, &wght);
         //printf("src: %d, dest: %d, wght: %d\n", src, dest, wght);
         graph.at(src).push_back(make_pair(dest, wght));
+
+        edges[0].push_back(src);
+        edges[1].push_back(dest);
+        edges[2].push_back(wght);
     }
 }
 
@@ -69,34 +64,39 @@ void initialize()
 }
 
 
-void dijkastra(int root)
+bool bellman_ford(int root)
 {
     distances.at(root) = 0;
 
     for(int i = 0; i<SIZE; ++i){
-        q.push(i);
-    }
-
-
-    while(! q.empty()){
-        int src = q.top();
-        done_vertices.push_back(src);
-        q.pop();
-
-        for(int i = 0; i<graph.at(src).size(); ++i){
-            int child = graph.at(src).at(i).first;
-            int weight = graph.at(src).at(i).second;
+        for(int j = 0; j<edges[0].size(); ++j){
+            int src = edges[0].at(j);
+            int dest = edges[1].at(j);
+            int weight = edges[2].at(j);
 
             int dist = distances.at(src);
             if(dist != INF) dist += weight;
-            // it will be false only if there's some node which is unreachable from the given root
 
-            if(distances.at(child) > dist){
-                distances.at(child) = dist;
-                predecessors.at(child) = src;
+            if(distances.at(dest) > dist){
+                distances.at(dest) = dist;
+                predecessors.at(dest) = src;
             }
         }
     }
+
+    for(int j = 0; j<edges[0].size(); ++j){
+        int src = edges[0].at(j);
+        int dest = edges[1].at(j);
+        int weight = edges[2].at(j);
+
+        int dist = distances.at(src);
+        if(dist != INF) dist += weight;
+
+        if(distances.at(dest) > dist){
+            return false;
+        }
+    }
+    return true;
 
 }
 
@@ -111,9 +111,15 @@ int main()
     print_graph();
     printf("\n");
 
+    printf("the edges with weight:\n");
+    for(int i =0; i< edges[0].size(); ++i){
+        printf("%d %d %d\n", edges[0].at(i), edges[1].at(i), edges[2].at(i));
+    }
+    printf("\n");
+
     initialize();
 
-    dijkastra(0);
+    bool bf = bellman_ford(0);
 
     printf("node \t dist \t path\n"); // node_id/number, distance from source, predecessor
     for(int i=0; i<SIZE; ++i){
@@ -132,9 +138,8 @@ int main()
     }
     printf("\n");
 
-    printf("finished vertices: ");
-    for(int i = 0; i<done_vertices.size(); ++i) printf("%d ", done_vertices.at(i));
-    printf("\n");
+    printf("no negative weight cycle: %d\n", bf);
 
     return 0;
 }
+
