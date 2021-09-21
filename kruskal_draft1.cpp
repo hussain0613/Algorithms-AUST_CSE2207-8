@@ -1,3 +1,37 @@
+/*
+implementation of kruskal's algorithm for finding Minimum Spanning Tree
+
+test1_input:
+9 14
+0 1 4
+0 7 8
+1 2 8
+1 7 11
+2 3 7
+2 5 4
+2 8 2
+3 4 9
+3 5 14
+4 5 10
+5 6 2
+6 7 1
+6 8 6
+7 8 7
+
+test1_output:
+Edges in the MST: (one among possible multiple correct answers)
+G H 1
+C I 2
+F G 2
+A B 4
+C F 4
+C D 7
+A H 8
+D E 9
+
+Total weight: 37
+*/
+
 #include<stdio.h>
 #include<bits/stdc++.h>
 
@@ -68,7 +102,7 @@ int main()
     vector<Edge> ans = kruskal();
     int t_w = 0;
 
-    printf("\n\nAns: \n");
+    printf("\n\nEdges in the MST: \n");
     for(int i = 0; i<ans.size(); ++i){
         printf("%c %c %d\n", ans.at(i).u+'A' , ans.at(i).v+'A', ans.at(i).w);
         t_w += ans.at(i).w;
